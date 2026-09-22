@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "tabgarden",
+  "version": "0.1.0",
+  "description": "AI tab grouping and clear-from-here-down, Arc style.",
+  "permissions": ["tabs", "tabGroups", "storage"],
+  "host_permissions": [
+    "https://*/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "tabgarden"
+  },
+  "options_page": "options.html",
+  "commands": {
+    "clear-down": {
+      "suggested_key": {
+        "default": "Alt+Shift+K"
+      },
+      "description": "Close this tab and loose tabs below it"
+    },
+    "group-ungrouped": {
+      "suggested_key": {
+        "default": "Alt+Shift+G"
+      },
+      "description": "AI-group ungrouped tabs"
+    },
+    "regroup-all": {
+      "description": "AI-regroup every tab in the window"
+    }
+  }
+}

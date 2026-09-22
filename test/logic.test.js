@@ -9,12 +9,8 @@ const tabs = [0, 1, 2, 3, 4, 5].map((i) => ({
   groupId: i === 4 ? 7 : -1,
 }));
 
-test('tabsToClear skips pinned and grouped tabs from the active tab down', () => {
-  assert.deepEqual(tabsToClear(tabs, tabs[2]), [102, 103, 105]);
-});
-
-test('tabsToClear skips a grouped active tab but clears loose tabs below', () => {
-  assert.deepEqual(tabsToClear(tabs, tabs[4]), [105]);
+test('tabsToClear keeps the active tab and skips pinned and grouped tabs below', () => {
+  assert.deepEqual(tabsToClear(tabs, tabs[2]), [103, 105]);
 });
 
 test('normalizeGroups filters, dedupes, merges, and enforces sizes', () => {

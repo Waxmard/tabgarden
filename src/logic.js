@@ -12,7 +12,7 @@ export const COLORS = [
 
 export function tabsToClear(tabs, activeTab) {
   return tabs
-    .filter((t) => t.index >= activeTab.index && !t.pinned && t.groupId === -1)
+    .filter((t) => t.index > activeTab.index && !t.pinned && t.groupId === -1)
     .map((t) => t.id);
 }
 

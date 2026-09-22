@@ -23,7 +23,7 @@
       "suggested_key": {
         "default": "Alt+Shift+K"
       },
-      "description": "Close this tab and loose tabs below it"
+      "description": "Close loose tabs below this one"
     },
     "group-ungrouped": {
       "suggested_key": {

@@ -33,17 +33,15 @@ function systemPrompt(existingNames) {
   );
 }
 
-export async function proposeGroups(tabs, existingNames) {
-  if (!globalThis.LanguageModel) {
-    throw new Error('On-device AI unavailable in this Chrome');
-  }
-  const availability = await Promise.race([
+export async function nanoAvailability() {
+  if (!globalThis.LanguageModel) return 'no-api';
+  return await Promise.race([
     LanguageModel.availability(NANO_OPTIONS),
     new Promise((r) => setTimeout(r, 5000, 'timeout')),
   ]);
-  if (availability !== 'available') {
-    throw new Error(`On-device AI not ready: ${availability}`);
-  }
+}
+
+export async function proposeGroups(tabs, existingNames) {
   const session = await LanguageModel.create({
     ...NANO_OPTIONS,
     topK: 1,

@@ -2,12 +2,15 @@
   "manifest_version": 3,
   "name": "tabgarden",
   "version": "0.2.0",
-  "description": "AI tab grouping and clear-from-here-down, Arc style.",
+  "description": "Group the tabs in your window by topic in one keystroke, and close the loose tabs after the one you're on.",
   "minimum_chrome_version": "138",
-  "permissions": [
-    "tabs",
-    "tabGroups"
-  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": ["tabs", "tabGroups", "sidePanel"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
@@ -16,12 +19,15 @@
     "default_popup": "popup.html",
     "default_title": "tabgarden"
   },
+  "side_panel": {
+    "default_path": "panel.html"
+  },
   "commands": {
     "clear-down": {
       "suggested_key": {
         "default": "Alt+Shift+K"
       },
-      "description": "Close loose tabs below this one"
+      "description": "Close loose tabs after this one"
     },
     "group-ungrouped": {
       "suggested_key": {
@@ -29,8 +35,8 @@
       },
       "description": "AI-group ungrouped tabs"
     },
-    "regroup-all": {
-      "description": "AI-regroup every tab in the window"
+    "ungroup-all": {
+      "description": "Ungroup every tab in the window"
     }
   }
 }

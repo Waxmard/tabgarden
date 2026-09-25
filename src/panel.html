@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>tabgarden</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { background: var(--canvas); }
+    main {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-4);
+      padding: var(--space-6);
+      text-align: center;
+    }
+    h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+    p { font-size: 14px; margin: 0; color: var(--text-2); max-width: 28ch; }
+    #logo { display: none; }
+    main[data-state="idle"] #logo { display: block; }
+    #icon {
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-pill);
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    main[data-state="idle"] #icon { display: none; }
+    main[data-state="running"] #icon {
+      border: 6px solid var(--fill);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+    }
+    main[data-state="done"] #icon {
+      color: var(--success);
+      background: color-mix(in srgb, var(--success) 14%, transparent);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--success) 30%, transparent);
+      animation: pop var(--dur-med) var(--ease);
+    }
+    main[data-state="error"] #icon {
+      color: var(--danger);
+      background: color-mix(in srgb, var(--danger) 14%, transparent);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--danger) 30%, transparent);
+      animation: pop var(--dur-med) var(--ease);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pop { from { transform: scale(0.6); opacity: 0; } }
+  </style>
+</head>
+<body>
+  <main id="panel" role="status" aria-live="polite">
+    <img id="logo" src="icons/icon-128.png" width="72" height="72" alt="">
+    <div id="icon" aria-hidden="true"></div>
+    <h1 id="title"></h1>
+    <p id="detail"></p>
+  </main>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>

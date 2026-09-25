@@ -101,3 +101,15 @@ export function parseJsonLoose(text) {
     }
   }
 }
+
+const count = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+export function describeResult(r) {
+  if (!r.ok) return r.error;
+  const { closed, ungrouped, grouped, groups } = r.result;
+  if (closed !== undefined) return `Closed ${count(closed, 'tab')}`;
+  if (ungrouped !== undefined) return `Ungrouped ${count(ungrouped, 'tab')}`;
+  if (!grouped) return 'Nothing to group';
+  const how = r.result.method === 'site' ? ' by site' : '';
+  return `Grouped ${count(grouped, 'tab')} into ${count(groups, 'group')}${how}`;
+}

@@ -5,6 +5,7 @@ import {
   normalizeGroups,
   parseJsonLoose,
   tabsToClear,
+  withLeftovers,
 } from '../src/logic.js';
 
 const tabs = [0, 1, 2, 3, 4, 5].map((i) => ({
@@ -58,4 +59,24 @@ test('groupBySite buckets http(s) tabs by registrable name and skips others', ()
     { name: 'bbc', tabIds: [3, 4] },
     { name: 'example', tabIds: [6] },
   ]);
+});
+
+test('group-every-tab mode keeps singletons and collects leftovers in Other', () => {
+  assert.deepEqual(
+    normalizeGroups([{ name: 'Solo', tabIds: [4] }], new Set([4]), [], 1),
+    [{ name: 'Solo', tabIds: [4] }]
+  );
+  assert.deepEqual(
+    withLeftovers([{ name: 'A', tabIds: [1] }], new Set([1, 2, 3])),
+    [
+      { name: 'A', tabIds: [1] },
+      { name: 'Other', tabIds: [2, 3] },
+    ]
+  );
+  assert.deepEqual(
+    withLeftovers([{ name: 'other', tabIds: [1] }], new Set([1, 2])),
+    [{ name: 'other', tabIds: [1, 2] }]
+  );
+  const g = [{ name: 'A', tabIds: [1] }];
+  assert.equal(withLeftovers(g, new Set([1])), g);
 });

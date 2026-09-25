@@ -23,13 +23,15 @@ const GROUPS_SCHEMA = {
   required: ['groups'],
 };
 
-function systemPrompt(existingNames) {
+function systemPrompt(existingNames, everyTab) {
   return (
     'You group browser tabs by topic or task. Return only JSON: ' +
     '{"groups":[{"name":"1-3 word name","tabIds":[numbers]}]}. ' +
     `Existing group names: ${existingNames.join(', ') || 'none'}. ` +
     'Reuse one of these names exactly when a tab fits it. ' +
-    'A new group needs at least 2 tabs. Leave out tabs that fit nowhere.'
+    (everyTab
+      ? 'Put every tab in exactly one group. A group may have just 1 tab.'
+      : 'A new group needs at least 2 tabs. Leave out tabs that fit nowhere.')
   );
 }
 
@@ -41,7 +43,7 @@ export async function nanoAvailability() {
   ]);
 }
 
-export async function proposeGroups(tabs, existingNames) {
+export async function proposeGroups(tabs, existingNames, everyTab) {
   const availability = await nanoAvailability();
   if (availability !== 'available') {
     throw new Error(`On-device AI not ready: ${availability}`);
@@ -50,7 +52,9 @@ export async function proposeGroups(tabs, existingNames) {
     ...NANO_OPTIONS,
     topK: 1,
     temperature: 1,
-    initialPrompts: [{ role: 'system', content: systemPrompt(existingNames) }],
+    initialPrompts: [
+      { role: 'system', content: systemPrompt(existingNames, everyTab) },
+    ],
   });
   try {
     const text = await session.prompt(formatTabs(tabs), {

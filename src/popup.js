@@ -2,7 +2,7 @@ import { NANO_OPTIONS, nanoAvailability } from './ai.js';
 
 const status = document.getElementById('status');
 const model = document.getElementById('model');
-const download = document.getElementById('download');
+const everyTab = document.getElementById('every-tab');
 const buttons = document.querySelectorAll('button');
 
 function describe(r) {
@@ -16,23 +16,32 @@ function describe(r) {
 
 const MODEL_STATES = {
   available: 'On-device AI ready',
-  downloadable: 'On-device AI not downloaded — grouping by site',
-  downloading: 'On-device AI downloading…',
+  downloadable: 'On-device AI not downloaded — click Group to download',
+  downloading: 'On-device AI downloading… — click Group to continue',
   unavailable: 'On-device AI not supported on this device — grouping by site',
   'no-api': 'On-device AI unavailable in this Chrome — grouping by site',
 };
 
+let modelState;
+
 async function showModelState() {
   const a = await nanoAvailability();
+  modelState = a;
   model.textContent =
     MODEL_STATES[a] ?? 'On-device AI not responding — grouping by site';
-  download.hidden = a !== 'downloadable' && a !== 'downloading';
 }
 
 showModelState();
 
-download.addEventListener('click', () => {
-  download.hidden = true;
+chrome.storage.local.get({ groupEveryTab: false }).then((s) => {
+  everyTab.checked = s.groupEveryTab;
+});
+everyTab.addEventListener('change', () =>
+  chrome.storage.local.set({ groupEveryTab: everyTab.checked })
+);
+
+function startModelDownload() {
+  if (modelState !== 'downloadable' && modelState !== 'downloading') return;
   model.textContent = 'On-device AI downloading…';
   LanguageModel.create({
     ...NANO_OPTIONS,
@@ -44,17 +53,18 @@ download.addEventListener('click', () => {
   }).then(
     (s) => {
       s.destroy();
-      model.textContent = 'On-device AI ready';
+      modelState = 'available';
+      model.textContent = 'On-device AI ready — run again for topic grouping';
     },
     (e) => {
       model.textContent = `On-device AI unavailable: ${e.message}`;
-      download.hidden = false;
     }
   );
-});
+}
 
 for (const b of document.querySelectorAll('[data-action]')) {
   b.addEventListener('click', async () => {
+    if (b.dataset.action !== 'clear-down') startModelDownload();
     for (const x of buttons) x.disabled = true;
     status.textContent = 'Working…';
     const r = await chrome.runtime.sendMessage({ action: b.dataset.action });

@@ -1,5 +1,11 @@
 import { proposeGroups } from './ai.js';
-import { COLORS, groupBySite, normalizeGroups, tabsToClear } from './logic.js';
+import {
+  COLORS,
+  groupBySite,
+  normalizeGroups,
+  tabsToClear,
+  withLeftovers,
+} from './logic.js';
 
 async function clearDown() {
   const [active] = await chrome.tabs.query({
@@ -17,6 +23,10 @@ async function autoGroup(mode) {
     (t) => !t.pinned
   );
   if (!tabs.length) return { grouped: 0, groups: 0 };
+  const { groupEveryTab } = await chrome.storage.local.get({
+    groupEveryTab: false,
+  });
+  const minNew = groupEveryTab ? 1 : 2;
   const windowId = tabs[0].windowId;
   let existing = [];
   let candidates = tabs;
@@ -32,17 +42,24 @@ async function autoGroup(mode) {
   let groups = [];
   try {
     groups = normalizeGroups(
-      await proposeGroups(candidates, existingNames),
+      await proposeGroups(candidates, existingNames, groupEveryTab),
       ids,
-      existingNames
+      existingNames,
+      minNew
     );
   } catch (e) {
     console.warn('tabgarden: falling back to site grouping', e);
   }
   if (!groups.length) {
     method = 'site';
-    groups = normalizeGroups(groupBySite(candidates), ids, existingNames);
+    groups = normalizeGroups(
+      groupBySite(candidates),
+      ids,
+      existingNames,
+      minNew
+    );
   }
+  if (groupEveryTab) groups = withLeftovers(groups, ids);
   if (mode === 'all') {
     const grouped = candidates.filter((t) => t.groupId !== -1);
     if (grouped.length) await chrome.tabs.ungroup(grouped.map((t) => t.id));
@@ -81,10 +98,11 @@ function run(action) {
 function badge(text, color, ms) {
   chrome.action.setBadgeText({ text });
   chrome.action.setBadgeBackgroundColor({ color });
-  setTimeout(() => chrome.action.setBadgeText({ text: '' }), ms);
+  if (ms) setTimeout(() => chrome.action.setBadgeText({ text: '' }), ms);
 }
 
 chrome.commands.onCommand.addListener((command) => {
+  badge('…', '#555555');
   run(command).then(
     (r) => badge(String(r.closed ?? r.grouped), '#2e7d32', 2000),
     (e) => {

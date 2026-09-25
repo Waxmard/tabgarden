@@ -3,7 +3,7 @@
 Guidance for AI agents working in this repo.
 
 tabgarden is a personal Chrome extension (Manifest V3, plain JS, no bundler) that
-AI-groups tabs in the current window and closes the loose tabs below the active tab.
+AI-groups tabs in the current window and closes the loose tabs after the active tab.
 
 ## Commands
 - `make ci` — biome check + `node --test` (what CI runs)

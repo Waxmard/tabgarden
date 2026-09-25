@@ -8,20 +8,20 @@
 tabgarden
 
 **Short Description**
-Group the tabs in your window by topic in one keystroke, and close the loose tabs below the one you're on.
+Group the tabs in your window by topic in one keystroke, and close the loose tabs after the one you're on.
 
 **Detailed Description**
 tabgarden keeps the current window tidy: it sorts loose tabs into named, colored groups and clears out the tabs you've left behind.
 
 Group ungrouped tabs by topic with one click or Alt+Shift+G. Tabs join your existing groups when they fit.
 A side panel shows progress while grouping runs, then the result, and closes itself.
-Close every loose tab below the active one with Alt+Shift+K. Pinned and grouped tabs are never closed.
+Close every loose tab after the active one with Alt+Shift+K. Pinned and grouped tabs are never closed.
 Ungroup every tab in the window from the toolbar button.
 
 How to use it:
 1. Open the tabs you want organized.
 2. Press Alt+Shift+G (or click the toolbar button, then "Group ungrouped").
-3. When you're done with the tabs below the current one, press Alt+Shift+K.
+3. When you're done with the tabs after the current one, press Alt+Shift+K.
 Shortcuts can be changed at chrome://extensions/shortcuts.
 
 Privacy: everything happens on your device. Topic grouping uses Chrome's built-in on-device AI; if it isn't available, tabs are grouped by site. tabgarden sends nothing over the network and stores nothing.
@@ -30,7 +30,7 @@ Privacy: everything happens on your device. Topic grouping uses Chrome's built-i
 Productivity
 
 **Single Purpose**
-Organizes the tabs in the current window: groups them by topic and closes loose tabs below the active one.
+Organizes the tabs in the current window: groups them by topic and closes loose tabs after the active one.
 
 **Primary Language**
 English
@@ -54,7 +54,7 @@ English
 
 | Permission | Type | Justification |
 |------------|------|---------------|
-| tabs | permissions | Reads tab titles and URLs in the current window so tabs can be grouped by topic or site, and closes tabs for "clear down". |
+| tabs | permissions | Reads tab titles and URLs in the current window so tabs can be grouped by topic or site, and closes tabs for "clear after". |
 | tabGroups | permissions | Creates tab groups and sets their names and colors. |
 | sidePanel | permissions | Shows grouping progress and the result in the side panel while "Group ungrouped" runs. |
 

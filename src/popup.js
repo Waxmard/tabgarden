@@ -1,18 +1,9 @@
 import { NANO_OPTIONS, nanoAvailability } from './ai.js';
+import { describeResult } from './logic.js';
 
 const status = document.getElementById('status');
 const model = document.getElementById('model');
 const buttons = document.querySelectorAll('button');
-
-function describe(r) {
-  if (!r.ok) return r.error;
-  const { closed, ungrouped, grouped, groups } = r.result;
-  if (closed !== undefined) return `Closed ${closed} tabs`;
-  if (ungrouped !== undefined) return `Ungrouped ${ungrouped} tabs`;
-  if (!grouped) return 'Nothing to group';
-  const how = r.result.method === 'site' ? ' by site' : '';
-  return `Grouped ${grouped} tabs into ${groups} groups${how}`;
-}
 
 const MODEL_STATES = {
   available: 'On-device AI ready',
@@ -23,6 +14,10 @@ const MODEL_STATES = {
 };
 
 let modelState;
+let windowId;
+chrome.windows.getCurrent().then((w) => {
+  windowId = w.id;
+});
 
 async function showModelState() {
   const a = await nanoAvailability();
@@ -58,10 +53,18 @@ function startModelDownload() {
 for (const b of document.querySelectorAll('[data-action]')) {
   b.addEventListener('click', async () => {
     if (b.dataset.action === 'group-ungrouped') startModelDownload();
+    if (
+      b.dataset.action === 'group-ungrouped' &&
+      modelState !== 'downloadable' &&
+      modelState !== 'downloading' &&
+      windowId !== undefined
+    ) {
+      chrome.sidePanel.open({ windowId }).catch(console.warn);
+    }
     for (const x of buttons) x.disabled = true;
     status.textContent = 'Working…';
     const r = await chrome.runtime.sendMessage({ action: b.dataset.action });
-    status.textContent = describe(r);
+    status.textContent = describeResult(r);
     for (const x of buttons) x.disabled = false;
   });
 }

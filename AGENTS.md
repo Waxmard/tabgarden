@@ -16,6 +16,7 @@ AI-groups tabs in the current window and closes the loose tabs below the active 
   - `logic.js` — pure selection/validation helpers; no `chrome.*`, unit-tested in Node
   - `ai.js` — on-device Gemini Nano via Chrome's Prompt API (`proposeGroups`); `background.js` falls back to `groupBySite` when Nano is unavailable or returns nothing
   - `popup.*` — toolbar popup; a click also starts the one-time Nano model download
+  - `panel.*` — side panel that opens while "Group ungrouped" runs; shows progress, then the result, then closes itself
 - `test/` — `node:test` suites for `src/logic.js`
 
 ## Conventions

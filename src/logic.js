@@ -101,3 +101,13 @@ export function parseJsonLoose(text) {
     }
   }
 }
+
+export function describeResult(r) {
+  if (!r.ok) return r.error;
+  const { closed, ungrouped, grouped, groups } = r.result;
+  if (closed !== undefined) return `Closed ${closed} tabs`;
+  if (ungrouped !== undefined) return `Ungrouped ${ungrouped} tabs`;
+  if (!grouped) return 'Nothing to group';
+  const how = r.result.method === 'site' ? ' by site' : '';
+  return `Grouped ${grouped} tabs into ${groups} groups${how}`;
+}

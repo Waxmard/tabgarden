@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>tabgarden</title>
+  <style>
+    html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; }
+    main {
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+    h1 { font-size: 28px; margin: 0; }
+    p { font-size: 18px; margin: 0; opacity: .8; }
+    #icon {
+      width: 72px;
+      height: 72px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      line-height: 1;
+    }
+    main[data-state="idle"] #icon { display: none; }
+    main[data-state="running"] #icon {
+      border: 8px solid #0002;
+      border-top-color: #1a73e8;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    main[data-state="done"] #icon { color: #2e7d32; }
+    main[data-state="error"] #icon { color: #c62828; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { #icon { animation: none; } }
+    @media (prefers-color-scheme: dark) { body { background: #202124; color: #e8eaed; } }
+  </style>
+</head>
+<body>
+  <main id="panel" role="status" aria-live="polite">
+    <div id="icon" aria-hidden="true"></div>
+    <h1 id="title"></h1>
+    <p id="detail"></p>
+  </main>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>

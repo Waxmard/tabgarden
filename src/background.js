@@ -1,5 +1,20 @@
 import { proposeGroups } from './ai.js';
-import { COLORS, groupBySite, normalizeGroups, tabsToClear } from './logic.js';
+import {
+  COLORS,
+  describeResult,
+  groupBySite,
+  normalizeGroups,
+  tabsToClear,
+} from './logic.js';
+
+let groupStatus = { state: 'idle', at: 0 };
+
+function setGroupStatus(state, text = '') {
+  groupStatus = { state, text, at: Date.now() };
+  chrome.runtime
+    .sendMessage({ type: 'group-status', ...groupStatus })
+    .catch(() => {});
+}
 
 async function clearDown() {
   const [active] = await chrome.tabs.query({
@@ -71,9 +86,21 @@ async function autoGroup() {
   return { grouped: total, groups: groups.length, method };
 }
 
+async function trackedGroup() {
+  setGroupStatus('running');
+  try {
+    const result = await autoGroup();
+    setGroupStatus('done', describeResult({ ok: true, result }));
+    return result;
+  } catch (e) {
+    setGroupStatus('error', e.message);
+    throw e;
+  }
+}
+
 function run(action) {
   if (action === 'clear-down') return clearDown();
-  if (action === 'group-ungrouped') return autoGroup();
+  if (action === 'group-ungrouped') return trackedGroup();
   if (action === 'ungroup-all') return ungroupAll();
   return Promise.reject(new Error(`Unknown action: ${action}`));
 }
@@ -84,7 +111,10 @@ function badge(text, color, ms) {
   if (ms) setTimeout(() => chrome.action.setBadgeText({ text: '' }), ms);
 }
 
-chrome.commands.onCommand.addListener((command) => {
+chrome.commands.onCommand.addListener((command, tab) => {
+  if (command === 'group-ungrouped') {
+    chrome.sidePanel.open({ windowId: tab.windowId }).catch(console.warn);
+  }
   badge('…', '#555555');
   run(command).then(
     (r) => badge(String(r.closed ?? r.ungrouped ?? r.grouped), '#2e7d32', 2000),
@@ -96,6 +126,10 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
+  if (msg.action === 'group-status') {
+    reply(groupStatus);
+    return;
+  }
   run(msg.action).then(
     (result) => reply({ ok: true, result }),
     (e) => reply({ ok: false, error: e.message })

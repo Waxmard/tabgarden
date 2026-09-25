@@ -1,4 +1,4 @@
-.PHONY: ci line-limit icons
+.PHONY: ci line-limit icons package
 ci: line-limit
 	npm run check && npm test
 
@@ -12,3 +12,9 @@ icons:
 	mkdir -p src/icons
 	for s in 16 32 48; do magick /tmp/tabgarden-icon.png -resize $${s}x$${s} src/icons/icon-$$s.png; done
 	magick /tmp/tabgarden-icon.png -resize 96x96 -background none -gravity center -extent 128x128 src/icons/icon-128.png
+
+VERSION = $(shell node -p "require('./src/manifest.json').version")
+package:
+	rm -f dist/tabgarden-v$(VERSION).zip
+	mkdir -p dist
+	cd src && zip -r ../dist/tabgarden-v$(VERSION).zip . -x '.DS_Store'

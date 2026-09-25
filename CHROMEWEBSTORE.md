@@ -50,6 +50,10 @@ English
 2. The side panel showing the grouping result.
 3. The toolbar popup with its three actions.
 
+## Packaging
+
+Run `make package` and upload `dist/tabgarden-v<version>.zip`.
+
 ## Permissions Justification
 
 | Permission | Type | Justification |
@@ -74,20 +78,20 @@ Tab titles and URLs are read in memory to decide groups, using on-device Gemini 
 ## Privacy Policy
 
 **Privacy Policy URL** [REQUIRED]
-TBD
+https://waxmard.github.io/tabgarden/privacy/
 
 ## Distribution
 
-**Visibility**: TBD
+**Visibility**: Public
 **Regions**: All regions
 
 ## Developer Info
 
 **Publisher Name** [REQUIRED]
-TBD
+Maxwell Ward
 
 **Contact Email** [REQUIRED]
-TBD
+maxward4@gmail.com
 
 **Support URL / Email**
 https://github.com/Waxmard/tabgarden/issues

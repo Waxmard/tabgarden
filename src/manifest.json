@@ -4,7 +4,7 @@
   "version": "0.2.0",
   "description": "AI tab grouping and clear-from-here-down, Arc style.",
   "minimum_chrome_version": "138",
-  "permissions": ["storage", "tabs", "tabGroups"],
+  "permissions": ["tabs", "tabGroups"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
@@ -25,9 +25,6 @@
         "default": "Alt+Shift+G"
       },
       "description": "AI-group ungrouped tabs"
-    },
-    "regroup-all": {
-      "description": "AI-regroup every tab in the window"
     },
     "ungroup-all": {
       "description": "Ungroup every tab in the window"

@@ -1,11 +1,5 @@
 import { proposeGroups } from './ai.js';
-import {
-  COLORS,
-  groupBySite,
-  normalizeGroups,
-  tabsToClear,
-  withLeftovers,
-} from './logic.js';
+import { COLORS, groupBySite, normalizeGroups, tabsToClear } from './logic.js';
 
 async function clearDown() {
   const [active] = await chrome.tabs.query({
@@ -26,22 +20,14 @@ async function ungroupAll() {
   return { ungrouped: ids.length };
 }
 
-async function autoGroup(mode) {
+async function autoGroup() {
   const tabs = (await chrome.tabs.query({ currentWindow: true })).filter(
     (t) => !t.pinned
   );
   if (!tabs.length) return { grouped: 0, groups: 0 };
-  const { groupEveryTab } = await chrome.storage.local.get({
-    groupEveryTab: false,
-  });
-  const minNew = groupEveryTab ? 1 : 2;
   const windowId = tabs[0].windowId;
-  let existing = [];
-  let candidates = tabs;
-  if (mode !== 'all') {
-    existing = await chrome.tabGroups.query({ windowId });
-    candidates = tabs.filter((t) => t.groupId === -1);
-  }
+  const existing = await chrome.tabGroups.query({ windowId });
+  const candidates = tabs.filter((t) => t.groupId === -1);
   const existingNames = existing.map((g) => g.title).filter(Boolean);
   if (!candidates.length) return { grouped: 0, groups: 0 };
 
@@ -50,27 +36,16 @@ async function autoGroup(mode) {
   let groups = [];
   try {
     groups = normalizeGroups(
-      await proposeGroups(candidates, existingNames, groupEveryTab),
+      await proposeGroups(candidates, existingNames),
       ids,
-      existingNames,
-      minNew
+      existingNames
     );
   } catch (e) {
     console.warn('tabgarden: falling back to site grouping', e);
   }
   if (!groups.length) {
     method = 'site';
-    groups = normalizeGroups(
-      groupBySite(candidates),
-      ids,
-      existingNames,
-      minNew
-    );
-  }
-  if (groupEveryTab) groups = withLeftovers(groups, ids);
-  if (mode === 'all') {
-    const grouped = candidates.filter((t) => t.groupId !== -1);
-    if (grouped.length) await chrome.tabs.ungroup(grouped.map((t) => t.id));
+    groups = normalizeGroups(groupBySite(candidates), ids, existingNames);
   }
 
   let total = 0;
@@ -98,8 +73,7 @@ async function autoGroup(mode) {
 
 function run(action) {
   if (action === 'clear-down') return clearDown();
-  if (action === 'group-ungrouped') return autoGroup('ungrouped');
-  if (action === 'regroup-all') return autoGroup('all');
+  if (action === 'group-ungrouped') return autoGroup();
   if (action === 'ungroup-all') return ungroupAll();
   return Promise.reject(new Error(`Unknown action: ${action}`));
 }

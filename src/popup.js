@@ -2,7 +2,6 @@ import { NANO_OPTIONS, nanoAvailability } from './ai.js';
 
 const status = document.getElementById('status');
 const model = document.getElementById('model');
-const everyTab = document.getElementById('every-tab');
 const buttons = document.querySelectorAll('button');
 
 function describe(r) {
@@ -34,13 +33,6 @@ async function showModelState() {
 
 showModelState();
 
-chrome.storage.local.get({ groupEveryTab: false }).then((s) => {
-  everyTab.checked = s.groupEveryTab;
-});
-everyTab.addEventListener('change', () =>
-  chrome.storage.local.set({ groupEveryTab: everyTab.checked })
-);
-
 function startModelDownload() {
   if (modelState !== 'downloadable' && modelState !== 'downloading') return;
   model.textContent = 'On-device AI downloading…';
@@ -65,11 +57,7 @@ function startModelDownload() {
 
 for (const b of document.querySelectorAll('[data-action]')) {
   b.addEventListener('click', async () => {
-    if (
-      b.dataset.action === 'group-ungrouped' ||
-      b.dataset.action === 'regroup-all'
-    )
-      startModelDownload();
+    if (b.dataset.action === 'group-ungrouped') startModelDownload();
     for (const x of buttons) x.disabled = true;
     status.textContent = 'Working…';
     const r = await chrome.runtime.sendMessage({ action: b.dataset.action });

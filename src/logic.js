@@ -67,7 +67,7 @@ export function groupBySite(tabs) {
   return [...buckets].map(([name, tabIds]) => ({ name, tabIds }));
 }
 
-export function normalizeGroups(groups, validIds, existingNames, minNew = 2) {
+export function normalizeGroups(groups, validIds, existingNames) {
   if (!Array.isArray(groups)) return [];
   const existing = new Set(existingNames.map((n) => n.toLowerCase()));
   const byName = new Map();
@@ -84,19 +84,8 @@ export function normalizeGroups(groups, validIds, existingNames, minNew = 2) {
     }
   }
   return [...byName.entries()]
-    .filter(([key, g]) => g.tabIds.length >= (existing.has(key) ? 1 : minNew))
+    .filter(([key, g]) => g.tabIds.length >= (existing.has(key) ? 1 : 2))
     .map(([, g]) => g);
-}
-
-export function withLeftovers(groups, validIds) {
-  const placed = new Set(groups.flatMap((g) => g.tabIds));
-  const missing = [...validIds].filter((id) => !placed.has(id));
-  if (!missing.length) return groups;
-  const i = groups.findIndex((g) => g.name.toLowerCase() === 'other');
-  if (i === -1) return [...groups, { name: 'Other', tabIds: missing }];
-  return groups.map((g, j) =>
-    j === i ? { ...g, tabIds: [...g.tabIds, ...missing] } : g
-  );
 }
 
 export function parseJsonLoose(text) {

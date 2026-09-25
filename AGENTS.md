@@ -8,6 +8,7 @@ AI-groups tabs in the current window and closes the loose tabs below the active 
 ## Commands
 - `make ci` — biome check + `node --test` (what CI runs)
 - `npm run check:fix` — apply biome fixes and formatting
+- `make icons` — regenerate `src/icons/*.png` from `assets/icon.svg` (needs Chrome and ImageMagick)
 
 ## Layout
 - `src/` — the unpacked extension root (load this directory, not the repo root)
@@ -18,6 +19,7 @@ AI-groups tabs in the current window and closes the loose tabs below the active 
   - `popup.*` — toolbar popup; a click also starts the one-time Nano model download
   - `panel.*` — side panel that opens while "Group ungrouped" runs; shows progress, then the result, then closes itself
 - `test/` — `node:test` suites for `src/logic.js`
+- `assets/icon.svg` — logo source; the PNGs in `src/icons/` are generated from it
 
 ## Conventions
 - Keep `chrome.*` calls out of `logic.js` so it stays testable without a browser.

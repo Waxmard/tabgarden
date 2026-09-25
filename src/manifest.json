@@ -4,6 +4,12 @@
   "version": "0.2.0",
   "description": "AI tab grouping and clear-from-here-down, Arc style.",
   "minimum_chrome_version": "138",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "permissions": ["tabs", "tabGroups", "sidePanel"],
   "background": {
     "service_worker": "background.js",

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <path id="back" d="M58 90 Q66 90 66 82 V32 Q66 20 78 20 H104 Q116 20 116 32 V82 Q116 90 124 90 Z"/>
+    <path id="middle" d="M32 104 Q40 104 40 96 V46 Q40 34 52 34 H78 Q90 34 90 46 V96 Q90 104 98 104 Z"/>
+    <path id="front" d="M6 118 Q14 118 14 110 V60 Q14 48 26 48 H52 Q64 48 64 60 V110 Q64 118 72 118 Z"/>
+    <mask id="behind-middle">
+      <rect width="128" height="128" fill="#fff"/>
+      <use href="#middle" stroke="#000" stroke-width="10" stroke-linejoin="round"/>
+      <use href="#front" stroke="#000" stroke-width="10" stroke-linejoin="round"/>
+    </mask>
+    <mask id="behind-front">
+      <rect width="128" height="128" fill="#fff"/>
+      <use href="#front" stroke="#000" stroke-width="10" stroke-linejoin="round"/>
+    </mask>
+  </defs>
+  <use href="#back" fill="#f9ab00" mask="url(#behind-middle)"/>
+  <use href="#middle" fill="#1e8e3e" mask="url(#behind-front)"/>
+  <use href="#front" fill="#1a73e8"/>
+  <path d="M28 87 C28 73.8 36.8 65 50 65 C50 78.2 41.2 87 28 87 Z" fill="#fff"/>
+</svg>

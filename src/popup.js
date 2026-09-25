@@ -1,7 +1,8 @@
-import { NANO_OPTIONS } from './ai.js';
+import { NANO_OPTIONS, nanoAvailability } from './ai.js';
 
 const status = document.getElementById('status');
 const model = document.getElementById('model');
+const download = document.getElementById('download');
 const buttons = document.querySelectorAll('button');
 
 function describe(r) {
@@ -13,10 +14,25 @@ function describe(r) {
   return `Grouped ${grouped} tabs into ${groups} groups${how}`;
 }
 
-async function startModelDownload() {
-  if (!globalThis.LanguageModel) return;
-  const a = await LanguageModel.availability(NANO_OPTIONS);
-  if (a !== 'downloadable' && a !== 'downloading') return;
+const MODEL_STATES = {
+  available: 'On-device AI ready',
+  downloadable: 'On-device AI not downloaded — grouping by site',
+  downloading: 'On-device AI downloading…',
+  unavailable: 'On-device AI not supported on this device — grouping by site',
+  'no-api': 'On-device AI unavailable in this Chrome — grouping by site',
+};
+
+async function showModelState() {
+  const a = await nanoAvailability();
+  model.textContent =
+    MODEL_STATES[a] ?? 'On-device AI not responding — grouping by site';
+  download.hidden = a !== 'downloadable' && a !== 'downloading';
+}
+
+showModelState();
+
+download.addEventListener('click', () => {
+  download.hidden = true;
   model.textContent = 'On-device AI downloading…';
   LanguageModel.create({
     ...NANO_OPTIONS,
@@ -28,17 +44,17 @@ async function startModelDownload() {
   }).then(
     (s) => {
       s.destroy();
-      model.textContent = 'On-device AI ready — run again for topic grouping';
+      model.textContent = 'On-device AI ready';
     },
     (e) => {
       model.textContent = `On-device AI unavailable: ${e.message}`;
+      download.hidden = false;
     }
   );
-}
+});
 
 for (const b of document.querySelectorAll('[data-action]')) {
   b.addEventListener('click', async () => {
-    if (b.dataset.action !== 'clear-down') startModelDownload();
     for (const x of buttons) x.disabled = true;
     status.textContent = 'Working…';
     const r = await chrome.runtime.sendMessage({ action: b.dataset.action });

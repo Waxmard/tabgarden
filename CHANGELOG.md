@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/Waxmard/tabgarden/compare/v0.2.0...v1.0.0) (2026-09-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* show grouping progress in side panel and redesign popup ([#2](https://github.com/Waxmard/tabgarden/issues/2))
+
+### Features
+
+* show grouping progress in side panel and redesign popup ([#2](https://github.com/Waxmard/tabgarden/issues/2)) ([1ddaec0](https://github.com/Waxmard/tabgarden/commit/1ddaec09970f2a0cff451546400a08e46b6730e6))
+
 ## [0.2.0](https://github.com/Waxmard/tabgarden/compare/v0.1.0...v0.2.0) (2026-09-25)
 
 

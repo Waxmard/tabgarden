@@ -14,7 +14,7 @@ function render({ state, text, at }) {
   if (state === 'running') {
     icon.textContent = '';
     title.textContent = 'Grouping tabs…';
-    detail.textContent = '';
+    detail.textContent = text ?? '';
   } else if (state === 'done' || state === 'error') {
     icon.textContent = state === 'done' ? '✓' : '!';
     title.textContent = state === 'done' ? 'Done' : 'Grouping failed';

@@ -1,4 +1,4 @@
-import { proposeGroups } from './ai.js';
+import { nanoAvailability, proposeGroups } from './ai.js';
 import {
   COLORS,
   describeResult,
@@ -49,14 +49,20 @@ async function autoGroup() {
   const ids = new Set(candidates.map((t) => t.id));
   let method = 'ai';
   let groups = [];
-  try {
-    groups = normalizeGroups(
-      await proposeGroups(candidates, existingNames),
-      ids,
-      existingNames
+  if ((await nanoAvailability()) === 'available') {
+    setGroupStatus(
+      'running',
+      `Gemini Nano is sorting ${candidates.length} tabs on this device. This can take a few seconds.`
     );
-  } catch (e) {
-    console.warn('tabgarden: falling back to site grouping', e);
+    try {
+      groups = normalizeGroups(
+        await proposeGroups(candidates, existingNames),
+        ids,
+        existingNames
+      );
+    } catch (e) {
+      console.warn('tabgarden: falling back to site grouping', e);
+    }
   }
   if (!groups.length) {
     method = 'site';

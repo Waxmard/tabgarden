@@ -42,10 +42,6 @@ export async function nanoAvailability() {
 }
 
 export async function proposeGroups(tabs, existingNames) {
-  const availability = await nanoAvailability();
-  if (availability !== 'available') {
-    throw new Error(`On-device AI not ready: ${availability}`);
-  }
   const session = await LanguageModel.create({
     ...NANO_OPTIONS,
     topK: 1,

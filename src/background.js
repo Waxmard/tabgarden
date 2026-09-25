@@ -18,6 +18,14 @@ async function clearDown() {
   return { closed: ids.length };
 }
 
+async function ungroupAll() {
+  const ids = (await chrome.tabs.query({ currentWindow: true }))
+    .filter((t) => t.groupId !== -1)
+    .map((t) => t.id);
+  if (ids.length) await chrome.tabs.ungroup(ids);
+  return { ungrouped: ids.length };
+}
+
 async function autoGroup(mode) {
   const tabs = (await chrome.tabs.query({ currentWindow: true })).filter(
     (t) => !t.pinned
@@ -92,6 +100,7 @@ function run(action) {
   if (action === 'clear-down') return clearDown();
   if (action === 'group-ungrouped') return autoGroup('ungrouped');
   if (action === 'regroup-all') return autoGroup('all');
+  if (action === 'ungroup-all') return ungroupAll();
   return Promise.reject(new Error(`Unknown action: ${action}`));
 }
 
@@ -104,7 +113,7 @@ function badge(text, color, ms) {
 chrome.commands.onCommand.addListener((command) => {
   badge('…', '#555555');
   run(command).then(
-    (r) => badge(String(r.closed ?? r.grouped), '#2e7d32', 2000),
+    (r) => badge(String(r.closed ?? r.ungrouped ?? r.grouped), '#2e7d32', 2000),
     (e) => {
       console.error(e);
       badge('!', '#c62828', 4000);

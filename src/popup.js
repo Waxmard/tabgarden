@@ -7,8 +7,9 @@ const buttons = document.querySelectorAll('button');
 
 function describe(r) {
   if (!r.ok) return r.error;
-  const { closed, grouped, groups } = r.result;
+  const { closed, ungrouped, grouped, groups } = r.result;
   if (closed !== undefined) return `Closed ${closed} tabs`;
+  if (ungrouped !== undefined) return `Ungrouped ${ungrouped} tabs`;
   if (!grouped) return 'Nothing to group';
   const how = r.result.method === 'site' ? ' by site' : '';
   return `Grouped ${grouped} tabs into ${groups} groups${how}`;
@@ -64,7 +65,11 @@ function startModelDownload() {
 
 for (const b of document.querySelectorAll('[data-action]')) {
   b.addEventListener('click', async () => {
-    if (b.dataset.action !== 'clear-down') startModelDownload();
+    if (
+      b.dataset.action === 'group-ungrouped' ||
+      b.dataset.action === 'regroup-all'
+    )
+      startModelDownload();
     for (const x of buttons) x.disabled = true;
     status.textContent = 'Working…';
     const r = await chrome.runtime.sendMessage({ action: b.dataset.action });

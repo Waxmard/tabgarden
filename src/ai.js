@@ -30,7 +30,7 @@ function systemPrompt(existingNames, everyTab) {
     `Existing group names: ${existingNames.join(', ') || 'none'}. ` +
     'Reuse one of these names exactly when a tab fits it. ' +
     (everyTab
-      ? 'Put every tab in exactly one group. A group may have just 1 tab.'
+      ? 'Use as few groups as possible, each a broad topic or task covering several tabs. Put tabs that fit no topic together in one group named "Other". Every tab must be in exactly one group.'
       : 'A new group needs at least 2 tabs. Leave out tabs that fit nowhere.')
   );
 }

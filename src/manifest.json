@@ -28,6 +28,9 @@
     },
     "regroup-all": {
       "description": "AI-regroup every tab in the window"
+    },
+    "ungroup-all": {
+      "description": "Ungroup every tab in the window"
     }
   }
 }

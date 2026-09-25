@@ -1,18 +1,131 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <title>tabgarden</title>
+    <link rel="stylesheet" href="theme.css" />
     <style>
-      body { width: 220px; font-family: system-ui, sans-serif; }
-      button { display: block; width: 100%; margin-bottom: 6px; }
+      body { width: 320px; }
+      .head {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--border);
+      }
+      .wordmark { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+      .actions { display: grid; gap: var(--space-1); padding: var(--space-2); }
+      .action {
+        display: grid;
+        grid-template-columns: 32px 1fr auto;
+        align-items: center;
+        gap: var(--space-3);
+        width: 100%;
+        min-height: 44px;
+        padding: var(--space-2);
+        border: 0;
+        border-radius: var(--radius-control);
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color var(--dur-fast) var(--ease),
+          transform var(--dur-fast) var(--ease);
+      }
+      .action:hover:not(:disabled) { background: var(--fill); }
+      .action:active:not(:disabled) { transform: scale(0.98); }
+      .action:disabled { opacity: 0.5; cursor: default; }
+      .action__icon {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-badge);
+        color: var(--tone);
+        background: color-mix(in srgb, var(--tone) 14%, transparent);
+      }
+      .action__text { display: grid; min-width: 0; }
+      .action__label { font-weight: 600; }
+      .action__hint {
+        font-size: 12px;
+        color: var(--text-2);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .action__key {
+        font: 500 11px/1 var(--font);
+        color: var(--text-2);
+        padding: var(--space-1) 6px;
+        border-radius: var(--radius-tag);
+        background: var(--fill);
+        border: 1px solid var(--border);
+      }
+      .foot {
+        display: grid;
+        gap: var(--space-1);
+        padding: var(--space-3) var(--space-4);
+        border-top: 1px solid var(--border);
+        background: var(--canvas);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+      .foot p { margin: 0; }
+      .foot__status {
+        min-height: 1.4em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text);
+      }
+      .foot__status[data-tone="error"] { color: var(--danger); }
+      .foot__status[data-tone="busy"] { color: var(--text-2); }
+      .foot__model {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        color: var(--text-2);
+      }
+      .foot__model::before {
+        content: "";
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-pill);
+        background: var(--text-3);
+      }
+      .foot__model[data-state="ready"]::before {
+        background: var(--success);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--success) 30%, transparent);
+      }
+      .foot__model[data-state="pending"]::before { background: var(--warning); }
     </style>
   </head>
   <body>
-    <button data-action="clear-down">Clear down</button>
-    <button data-action="group-ungrouped">Group ungrouped</button>
-    <button data-action="ungroup-all">Ungroup all</button>
-    <p id="status"></p>
-    <p id="model"></p>
+    <header class="head">
+      <img src="icons/icon-32.png" width="20" height="20" alt="" />
+      <span class="wordmark">tabgarden</span>
+    </header>
+    <div class="actions">
+      <button class="action" data-action="group-ungrouped" style="--tone: var(--success)">
+        <span class="action__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+        <span class="action__text"><span class="action__label">Group ungrouped</span><span class="action__hint">Sort loose tabs into groups by topic</span></span>
+        <kbd class="action__key" hidden></kbd>
+      </button>
+      <button class="action" data-action="clear-down" style="--tone: var(--danger)">
+        <span class="action__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg></span>
+        <span class="action__text"><span class="action__label">Clear down</span><span class="action__hint">Close loose tabs below this one</span></span>
+        <kbd class="action__key" hidden></kbd>
+      </button>
+      <button class="action" data-action="ungroup-all" style="--tone: var(--accent)">
+        <span class="action__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M14 6h4a3 3 0 0 1 3 3"/><path d="M10 18H6a3 3 0 0 1-3-3"/></svg></span>
+        <span class="action__text"><span class="action__label">Ungroup all</span><span class="action__hint">Remove every group in this window</span></span>
+        <kbd class="action__key" hidden></kbd>
+      </button>
+    </div>
+    <footer class="foot">
+      <p id="status" class="foot__status" role="status" aria-live="polite"></p>
+      <p id="model" class="foot__model"></p>
+    </footer>
     <script type="module" src="popup.js"></script>
   </body>
 </html>

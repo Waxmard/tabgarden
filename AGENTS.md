@@ -22,6 +22,7 @@ AI-groups tabs in the current window and closes the loose tabs below the active 
 - Keep `chrome.*` calls out of `logic.js` so it stays testable without a browser.
 - No build step and no dependencies at runtime; biome is the only dev tool.
 - No settings, keys, or network calls: grouping runs on-device (Nano) or by site.
+- Whenever you create or change anything in the extension, create and maintain `CHROMEWEBSTORE.md` (store listing, single purpose, a justification for each manifest permission, privacy notes). Use the `chrome-extensions` skill for its format.
 
 ## Reloading after edits
 Open `chrome://extensions`, enable Developer mode, and click the reload icon on the

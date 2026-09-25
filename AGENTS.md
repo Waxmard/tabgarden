@@ -6,7 +6,7 @@ tabgarden is a personal Chrome extension (Manifest V3, plain JS, no bundler) tha
 AI-groups tabs in the current window and closes the loose tabs after the active tab.
 
 ## Commands
-- `make ci` — biome check + `node --test` (what CI runs)
+- `make ci` — 250-line per-file cap (`scripts/check-line-limit.sh`) + biome check + `node --test` (what CI runs)
 - `npm run check:fix` — apply biome fixes and formatting
 - `make icons` — regenerate `src/icons/*.png` from `assets/icon.svg` (needs Chrome and ImageMagick)
 

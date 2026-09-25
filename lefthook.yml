@@ -5,3 +5,6 @@ pre-commit:
       glob: "*.{js,json}"
       run: npm run check:staged -- {staged_files}
       stage_fixed: true
+    line-limit:
+      glob: "*.{js,html,css}"
+      run: bash scripts/check-line-limit.sh {staged_files}

@@ -1,6 +1,9 @@
-.PHONY: ci icons
-ci:
+.PHONY: ci line-limit icons
+ci: line-limit
 	npm run check && npm test
+
+line-limit:
+	@bash scripts/check-line-limit.sh
 
 CHROME ?= /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 icons:

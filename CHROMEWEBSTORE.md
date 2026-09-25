@@ -17,6 +17,7 @@ Group ungrouped tabs by topic with one click or Alt+Shift+G. Tabs join your exis
 A side panel shows progress while grouping runs, then the result, and closes itself.
 Close every loose tab after the active one with Alt+Shift+K. Pinned and grouped tabs are never closed.
 Ungroup every tab in the window from the toolbar button.
+Works the same with Chrome's horizontal tab strip and vertical tabs.
 
 How to use it:
 1. Open the tabs you want organized.
@@ -40,15 +41,19 @@ English
 | Asset | Dimensions | Status | Filename |
 |-------|-----------|--------|----------|
 | Store Icon [REQUIRED] | 128×128 PNG | ✅ Created | src/icons/icon-128.png |
-| Screenshot 1 [REQUIRED] | 1280×800 or 640×400 | ⬜ Not created | |
-| Screenshot 2 [RECOMMENDED] | 1280×800 or 640×400 | ⬜ Not created | |
-| Screenshot 3 [RECOMMENDED] | 1280×800 or 640×400 | ⬜ Not created | |
-| Small Promo Tile [RECOMMENDED] | 440×280 | ⬜ Not created | |
+| Screenshot 1 [REQUIRED] | 1280×800 or 640×400 | ✅ Created | assets/store/screenshot-1.png |
+| Screenshot 2 [RECOMMENDED] | 1280×800 or 640×400 | ✅ Created | assets/store/screenshot-2.png |
+| Screenshot 3 [RECOMMENDED] | 1280×800 or 640×400 | ✅ Created | assets/store/screenshot-3.png |
+| Screenshot 4 [RECOMMENDED] | 1280×800 or 640×400 | ✅ Created | assets/store/screenshot-4.png |
+| Screenshot 5 [RECOMMENDED] | 1280×800 or 640×400 | ✅ Created | assets/store/screenshot-5.png |
+| Small Promo Tile [RECOMMENDED] | 440×280 | ✅ Created | assets/store/promo-small.png |
 
 ### Screenshot Notes
-1. A cluttered window before grouping next to the same window after, with named, colored groups.
-2. The side panel showing the grouping result.
-3. The toolbar popup with its three actions.
+1. Vertical tabs before and after grouping, with named, colored groups.
+2. The horizontal tab strip before and after grouping.
+3. A grouped window with the popup result and the side panel's "Done" state.
+4. The toolbar popup after grouping, with its three actions.
+5. The horizontal tab strip before and after Clear after (Alt+Shift+K) closes the loose tabs after the active one.
 
 ## Packaging
 

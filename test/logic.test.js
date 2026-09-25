@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  describeResult,
   groupBySite,
   normalizeGroups,
   parseJsonLoose,
@@ -58,4 +59,14 @@ test('groupBySite buckets http(s) tabs by registrable name and skips others', ()
     { name: 'bbc', tabIds: [3, 4] },
     { name: 'example', tabIds: [6] },
   ]);
+});
+
+test('describeResult pluralizes counts', () => {
+  const d = (result) => describeResult({ ok: true, result });
+  assert.equal(d({ grouped: 4, groups: 1 }), 'Grouped 4 tabs into 1 group');
+  assert.equal(
+    d({ grouped: 1, groups: 2, method: 'site' }),
+    'Grouped 1 tab into 2 groups by site'
+  );
+  assert.equal(d({ closed: 1 }), 'Closed 1 tab');
 });

@@ -22,6 +22,7 @@ AI-groups tabs in the current window and closes the loose tabs after the active 
   - `theme.css` — shared styles for the popup and side panel
 - `test/` — `node:test` suites for `src/logic.js`
 - `assets/icon.svg` — logo source; the PNGs in `src/icons/` are generated from it
+- `assets/store/` — store screenshots
 - `docs/privacy.md` — privacy policy served on GitHub Pages
 
 ## Conventions

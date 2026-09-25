@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { normalizeGroups, parseJsonLoose, tabsToClear } from '../src/logic.js';
+import {
+  groupBySite,
+  normalizeGroups,
+  parseJsonLoose,
+  tabsToClear,
+} from '../src/logic.js';
 
 const tabs = [0, 1, 2, 3, 4, 5].map((i) => ({
   id: 100 + i,
@@ -37,4 +42,20 @@ test('parseJsonLoose strips code fences and rejects non-JSON', () => {
     groups: [],
   });
   assert.throws(() => parseJsonLoose('nope'), /AI response was not JSON/);
+});
+
+test('groupBySite buckets http(s) tabs by registrable name and skips others', () => {
+  const urls = [
+    'https://github.com/a',
+    'https://docs.github.com/b',
+    'https://www.bbc.co.uk/x',
+    'https://bbc.co.uk/y',
+    'chrome://newtab/',
+    'https://example.org/',
+  ];
+  assert.deepEqual(groupBySite(urls.map((url, i) => ({ id: i + 1, url }))), [
+    { name: 'github', tabIds: [1, 2] },
+    { name: 'bbc', tabIds: [3, 4] },
+    { name: 'example', tabIds: [6] },
+  ]);
 });

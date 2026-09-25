@@ -1,5 +1,5 @@
-User POV: me, using the extension in Chrome — the product is what the popup, shortcuts, and options page do to my tabs.
-"User-facing" = a change in tab grouping, clear-down behavior, provider support, or the popup/options UI.
+User POV: me, using the extension in Chrome — the product is what the popup and shortcuts do to my tabs.
+"User-facing" = a change in tab grouping, clear-down behavior, AI vs. site fallback, or the popup UI.
 
 - Changing the AI prompt text to improve grouping results → fix
-- Adding a new AI provider adapter → feat
+- Improving the group-by-site fallback → fix

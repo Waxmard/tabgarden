@@ -34,6 +34,39 @@ export function formatTabs(tabs) {
     .join('\n');
 }
 
+// ponytail: naive eTLD heuristic; use a public-suffix list if multi-part TLDs misgroup
+export function siteName(hostname) {
+  const host = hostname.toLowerCase().replace(/^www\./, '');
+  if (/^\d+(\.\d+){3}$/.test(host) || !host.includes('.')) return host;
+  const labels = host.split('.');
+  let i = labels.length - 2;
+  if (
+    labels.length > 2 &&
+    labels.at(-1).length === 2 &&
+    labels[i].length <= 3
+  ) {
+    i -= 1;
+  }
+  return labels[i];
+}
+
+export function groupBySite(tabs) {
+  const buckets = new Map();
+  for (const t of tabs) {
+    let u;
+    try {
+      u = new URL(t.url);
+    } catch {
+      continue;
+    }
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') continue;
+    const name = siteName(u.hostname);
+    if (!buckets.has(name)) buckets.set(name, []);
+    buckets.get(name).push(t.id);
+  }
+  return [...buckets].map(([name, tabIds]) => ({ name, tabIds }));
+}
+
 export function normalizeGroups(groups, validIds, existingNames) {
   if (!Array.isArray(groups)) return [];
   const existing = new Set(existingNames.map((n) => n.toLowerCase()));

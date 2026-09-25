@@ -1,20 +1,5 @@
-import { DEFAULT_BASE_URLS, proposeGroups } from './ai.js';
-import { COLORS, normalizeGroups, tabsToClear } from './logic.js';
-
-const DEFAULT_MODELS = { openai: 'gpt-4.1-mini', gemini: 'gemini-2.5-flash' };
-
-async function getSettings() {
-  const s = await chrome.storage.local.get({
-    provider: 'openai',
-    baseUrl: '',
-    apiKey: '',
-    model: '',
-    categories: '',
-  });
-  s.baseUrl = (s.baseUrl || DEFAULT_BASE_URLS[s.provider]).replace(/\/$/, '');
-  s.model ||= DEFAULT_MODELS[s.provider];
-  return s;
-}
+import { proposeGroups } from './ai.js';
+import { COLORS, groupBySite, normalizeGroups, tabsToClear } from './logic.js';
 
 async function clearDown() {
   const [active] = await chrome.tabs.query({
@@ -42,16 +27,22 @@ async function autoGroup(mode) {
   const existingNames = existing.map((g) => g.title).filter(Boolean);
   if (!candidates.length) return { grouped: 0, groups: 0 };
 
-  const raw = await proposeGroups(
-    await getSettings(),
-    candidates,
-    existingNames
-  );
-  const groups = normalizeGroups(
-    raw,
-    new Set(candidates.map((t) => t.id)),
-    existingNames
-  );
+  const ids = new Set(candidates.map((t) => t.id));
+  let method = 'ai';
+  let groups = [];
+  try {
+    groups = normalizeGroups(
+      await proposeGroups(candidates, existingNames),
+      ids,
+      existingNames
+    );
+  } catch (e) {
+    console.warn('tabgarden: falling back to site grouping', e);
+  }
+  if (!groups.length) {
+    method = 'site';
+    groups = normalizeGroups(groupBySite(candidates), ids, existingNames);
+  }
   if (mode === 'all') {
     const grouped = candidates.filter((t) => t.groupId !== -1);
     if (grouped.length) await chrome.tabs.ungroup(grouped.map((t) => t.id));
@@ -77,7 +68,7 @@ async function autoGroup(mode) {
     }
     total += tabIds.length;
   }
-  return { grouped: total, groups: groups.length };
+  return { grouped: total, groups: groups.length, method };
 }
 
 function run(action) {

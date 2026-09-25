@@ -11,17 +11,17 @@ AI-groups tabs in the current window and closes the loose tabs below the active 
 
 ## Layout
 - `src/` — the unpacked extension root (load this directory, not the repo root)
-  - `manifest.json` — permissions, commands (keyboard shortcuts), popup/options wiring
+  - `manifest.json` — permissions, commands (keyboard shortcuts), popup wiring
   - `background.js` — service worker: `clearDown`, `autoGroup`, command + message handlers
   - `logic.js` — pure selection/validation helpers; no `chrome.*`, unit-tested in Node
-  - `ai.js` — OpenAI-compatible and Gemini adapters (`proposeGroups`)
-  - `popup.*`, `options.*` — toolbar popup and settings page
+  - `ai.js` — on-device Gemini Nano via Chrome's Prompt API (`proposeGroups`); `background.js` falls back to `groupBySite` when Nano is unavailable or returns nothing
+  - `popup.*` — toolbar popup; a click also starts the one-time Nano model download
 - `test/` — `node:test` suites for `src/logic.js`
 
 ## Conventions
 - Keep `chrome.*` calls out of `logic.js` so it stays testable without a browser.
 - No build step and no dependencies at runtime; biome is the only dev tool.
-- Settings live in `chrome.storage.local` (never `sync`) so API keys stay on one device.
+- No settings, keys, or network calls: grouping runs on-device (Nano) or by site.
 
 ## Reloading after edits
 Open `chrome://extensions`, enable Developer mode, and click the reload icon on the

@@ -4,6 +4,12 @@ import { describeResult } from './logic.js';
 const status = document.getElementById('status');
 const model = document.getElementById('model');
 const buttons = document.querySelectorAll('button');
+const access = document.getElementById('access');
+const TABS = { permissions: ['tabs'] };
+
+chrome.permissions.contains(TABS).then((has) => {
+  access.hidden = has;
+});
 
 const MODEL_STATES = {
   available: 'On-device AI ready',
@@ -89,8 +95,8 @@ for (const b of document.querySelectorAll('[data-action]')) {
     status.dataset.tone = 'busy';
     status.textContent = 'Working…';
     if (b.dataset.action === 'group-ungrouped') {
-      await chrome.permissions
-        .request({ permissions: ['tabs'] })
+      access.hidden = await chrome.permissions
+        .request(TABS)
         .catch(console.warn);
     }
     const r = await chrome.runtime.sendMessage({ action: b.dataset.action });

@@ -98,6 +98,7 @@
         box-shadow: 0 0 12px color-mix(in srgb, var(--success) 30%, transparent);
       }
       .foot__model[data-state="pending"]::before { background: var(--warning); }
+      .foot__note { color: var(--text-2); }
     </style>
   </head>
   <body>
@@ -125,6 +126,7 @@
     <footer class="foot">
       <p id="status" class="foot__status" role="status" aria-live="polite"></p>
       <p id="model" class="foot__model"></p>
+      <p id="access" class="foot__note" hidden>The first time you group, Chrome asks to "Read your browsing history". tabgarden only reads the titles and URLs of tabs in this window, on your device, and saves nothing.</p>
     </footer>
     <script type="module" src="popup.js"></script>
   </body>

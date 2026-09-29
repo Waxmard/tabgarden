@@ -88,6 +88,11 @@ for (const b of document.querySelectorAll('[data-action]')) {
     for (const x of buttons) x.disabled = true;
     status.dataset.tone = 'busy';
     status.textContent = 'Working…';
+    if (b.dataset.action === 'group-ungrouped') {
+      await chrome.permissions
+        .request({ permissions: ['tabs'] })
+        .catch(console.warn);
+    }
     const r = await chrome.runtime.sendMessage({ action: b.dataset.action });
     status.dataset.tone = r.ok ? 'ok' : 'error';
     status.textContent = describeResult(r);

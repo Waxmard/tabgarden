@@ -1,6 +1,6 @@
 # Chrome Web Store Listing — tabgarden
 
-> Last Updated: 2026-09-25
+> Last Updated: 2026-09-29
 
 ## Store Listing
 
@@ -63,7 +63,7 @@ Run `make package` and upload `dist/tabgarden-v<version>.zip`.
 
 | Permission | Type | Justification |
 |------------|------|---------------|
-| tabs | permissions | Reads tab titles and URLs in the current window so tabs can be grouped by topic or site, and closes tabs for "clear after". |
+| tabs | optional_permissions | Requested the first time the user clicks "Group ungrouped". Reads tab titles and URLs in the current window so tabs can be grouped by topic or site. Closing and ungrouping tabs work without it. |
 | tabGroups | permissions | Creates tab groups and sets their names and colors. |
 | sidePanel | permissions | Shows grouping progress and the result in the side panel while "Group ungrouped" runs. |
 

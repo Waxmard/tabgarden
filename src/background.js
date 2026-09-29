@@ -36,6 +36,11 @@ async function ungroupAll() {
 }
 
 async function autoGroup() {
+  if (!(await chrome.permissions.contains({ permissions: ['tabs'] }))) {
+    throw new Error(
+      'Grouping needs access to tab titles and URLs. Click "Group ungrouped" in the toolbar popup to allow it.'
+    );
+  }
   const tabs = (await chrome.tabs.query({ currentWindow: true })).filter(
     (t) => !t.pinned
   );

@@ -27,6 +27,8 @@ Shortcuts can be changed at chrome://extensions/shortcuts.
 
 Privacy: everything happens on your device. Topic grouping uses Chrome's built-in on-device AI; if it isn't available, tabs are grouped by site. tabgarden sends nothing over the network and stores nothing.
 
+About the "Read your browsing history" prompt: Chrome uses that wording for any extension that can see tab titles and URLs. tabgarden asks for it the first time you group tabs, and only reads the titles and URLs of the tabs in your current window, on your device, when you ask it to group. It never reads your history list and saves nothing. Clear after and Ungroup all work without it.
+
 **Category**
 Productivity
 

@@ -5,11 +5,13 @@ permalink: /privacy/
 
 # tabgarden privacy policy
 
-Last updated: 2026-09-25
+Last updated: 2026-09-29
 
 ## What tabgarden reads
 
 tabgarden reads the titles and URLs of the tabs in your current window, in memory only, to decide how to group them. Grouping runs on your device, either with Chrome's built-in AI (Gemini Nano) or by each tab's site hostname.
+
+The first time you group tabs, Chrome asks you to allow tabgarden to "Read your browsing history". Chrome uses that wording for any extension that can see tab titles and URLs. tabgarden never reads your history list; it only sees the tabs open in your current window when you ask it to group them. Closing and ungrouping tabs work without this permission.
 
 ## What tabgarden collects, stores, or shares
 

@@ -7,7 +7,9 @@ const buttons = document.querySelectorAll('button');
 const access = document.getElementById('access');
 const TABS = { permissions: ['tabs'] };
 
+let hasTabs;
 chrome.permissions.contains(TABS).then((has) => {
+  hasTabs = has;
   access.hidden = has;
 });
 
@@ -72,7 +74,7 @@ function startModelDownload() {
     (s) => {
       s.destroy();
       modelState = 'available';
-      setModel('On-device AI ready — run again for topic grouping', 'ready');
+      setModel('On-device AI ready', 'ready');
     },
     (e) => {
       setModel(`On-device AI unavailable: ${e.message}`, 'off');
@@ -94,12 +96,17 @@ for (const b of document.querySelectorAll('[data-action]')) {
     for (const x of buttons) x.disabled = true;
     status.dataset.tone = 'busy';
     status.textContent = 'Working…';
-    if (b.dataset.action === 'group-ungrouped') {
-      access.hidden = await chrome.permissions
-        .request(TABS)
-        .catch(console.warn);
+    const reply = chrome.runtime.sendMessage({
+      action: b.dataset.action,
+      interactive: true,
+    });
+    if (b.dataset.action === 'group-ungrouped' && !hasTabs) {
+      hasTabs = await chrome.permissions.request(TABS).catch(() => false);
+      access.hidden = hasTabs;
+      if (!hasTabs)
+        chrome.runtime.sendMessage({ action: 'tabs-denied' }).catch(() => {});
     }
-    const r = await chrome.runtime.sendMessage({ action: b.dataset.action });
+    const r = await reply;
     status.dataset.tone = r.ok ? 'ok' : 'error';
     status.textContent = describeResult(r);
     status.title = status.textContent;

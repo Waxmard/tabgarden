@@ -8,12 +8,64 @@ import {
 } from './logic.js';
 
 let groupStatus = { state: 'idle', at: 0 };
+const TABS = { permissions: ['tabs'] };
+const NO_TABS =
+  'Grouping needs access to tab titles and URLs. Click "Group ungrouped" in the toolbar popup to allow it.';
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let tabsDenied = false;
 
 function setGroupStatus(state, text = '') {
   groupStatus = { state, text, at: Date.now() };
   chrome.runtime
     .sendMessage({ type: 'group-status', ...groupStatus })
     .catch(() => {});
+}
+
+// An idle extension service worker is stopped after 30s; each extension API call resets that timer.
+async function waitUntil(done, ms) {
+  const end = Date.now() + ms;
+  while (!(await done())) {
+    if (Date.now() > end) return false;
+    await sleep(1000);
+    await chrome.runtime.getPlatformInfo();
+  }
+  return true;
+}
+
+async function ensureTabs(interactive) {
+  if (await chrome.permissions.contains(TABS)) return;
+  if (interactive) {
+    tabsDenied = false;
+    setGroupStatus(
+      'running',
+      'Waiting for you to allow access to tab titles and URLs.'
+    );
+    await waitUntil(
+      async () => tabsDenied || (await chrome.permissions.contains(TABS)),
+      120_000
+    );
+    if (await chrome.permissions.contains(TABS)) return;
+  }
+  throw new Error(NO_TABS);
+}
+
+async function nanoReady(interactive) {
+  const start = Date.now();
+  let a = await nanoAvailability();
+  if (interactive && (a === 'downloadable' || a === 'downloading')) {
+    setGroupStatus(
+      'running',
+      'Downloading Gemini Nano, one time only. Grouping starts when it finishes.'
+    );
+    await waitUntil(async () => {
+      a = await nanoAvailability();
+      return !(
+        a === 'downloading' ||
+        (a === 'downloadable' && Date.now() - start < 15_000)
+      );
+    }, 20 * 60_000);
+  }
+  return a === 'available';
 }
 
 async function clearDown() {
@@ -35,12 +87,9 @@ async function ungroupAll() {
   return { ungrouped: ids.length };
 }
 
-async function autoGroup() {
-  if (!(await chrome.permissions.contains({ permissions: ['tabs'] }))) {
-    throw new Error(
-      'Grouping needs access to tab titles and URLs. Click "Group ungrouped" in the toolbar popup to allow it.'
-    );
-  }
+async function autoGroup(interactive) {
+  await ensureTabs(interactive);
+  const useAi = await nanoReady(interactive);
   const tabs = (await chrome.tabs.query({ currentWindow: true })).filter(
     (t) => !t.pinned
   );
@@ -54,7 +103,7 @@ async function autoGroup() {
   const ids = new Set(candidates.map((t) => t.id));
   let method = 'ai';
   let groups = [];
-  if ((await nanoAvailability()) === 'available') {
+  if (useAi) {
     setGroupStatus(
       'running',
       `Gemini Nano is sorting ${candidates.length} tabs on this device. This can take a few seconds.`
@@ -97,10 +146,10 @@ async function autoGroup() {
   return { grouped: total, groups: groups.length, method };
 }
 
-async function trackedGroup() {
+async function trackedGroup(interactive) {
   setGroupStatus('running');
   try {
-    const result = await autoGroup();
+    const result = await autoGroup(interactive);
     setGroupStatus('done', describeResult({ ok: true, result }));
     return result;
   } catch (e) {
@@ -109,9 +158,9 @@ async function trackedGroup() {
   }
 }
 
-function run(action) {
+function run(action, interactive = false) {
   if (action === 'clear-down') return clearDown();
-  if (action === 'group-ungrouped') return trackedGroup();
+  if (action === 'group-ungrouped') return trackedGroup(interactive);
   if (action === 'ungroup-all') return ungroupAll();
   return Promise.reject(new Error(`Unknown action: ${action}`));
 }
@@ -137,11 +186,15 @@ chrome.commands.onCommand.addListener((command, tab) => {
 });
 
 chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
+  if (msg.action === 'tabs-denied') {
+    tabsDenied = true;
+    return;
+  }
   if (msg.action === 'group-status') {
     reply(groupStatus);
     return;
   }
-  run(msg.action).then(
+  run(msg.action, msg.interactive === true).then(
     (result) => reply({ ok: true, result }),
     (e) => reply({ ok: false, error: e.message })
   );

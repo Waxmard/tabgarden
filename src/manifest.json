@@ -10,8 +10,13 @@
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
   },
-  "permissions": ["tabGroups", "sidePanel"],
-  "optional_permissions": ["tabs"],
+  "permissions": [
+    "tabGroups",
+    "sidePanel"
+  ],
+  "optional_permissions": [
+    "tabs"
+  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"

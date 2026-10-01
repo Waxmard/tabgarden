@@ -31,6 +31,14 @@ AI-groups tabs in the current window and closes the loose tabs after the active 
 - No settings, keys, or network calls: grouping runs on-device (Nano) or by site.
 - Whenever you create or change anything in the extension, create and maintain `CHROMEWEBSTORE.md` (store listing, single purpose, a justification for each manifest permission, privacy notes). Use the `chrome-extensions` skill for its format.
 
+## Branching & releases
+- Branch off `dev` (the default branch) and open PRs against `dev`; PRs are squash-merged. `main` is release-only.
+- Conventional Commit subjects are required: release-please derives the version and changelog from them.
+- To ship, open a `dev → main` PR and rebase-merge it. release-please then opens a release PR on `main` that bumps `src/manifest.json` and auto-merges once CI passes; the merge tags the version.
+- After a release, reset `dev` to `main` (`git switch dev && git reset --hard origin/main && git push -f`) so the rebased commits don't reappear in the next promotion.
+- Upload to the Chrome Web Store by hand: `make package` on the tagged `main`, then upload `dist/tabgarden-v<version>.zip`.
+- Biome formats JSON with `expand: always` so it matches release-please's rewrite of `src/manifest.json`; don't collapse it.
+
 ## Reloading after edits
 Open `chrome://extensions`, enable Developer mode, and click the reload icon on the
 tabgarden card (first time: Load unpacked → pick `src/`). Service worker logs are under

@@ -22,6 +22,11 @@
       "arrowParentheses": "always"
     }
   },
+  "json": {
+    "formatter": {
+      "expand": "always"
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "tabgarden",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Group the tabs in your window by topic in one keystroke, and close the loose tabs after the one you're on.",
   "minimum_chrome_version": "138",
   "icons": {

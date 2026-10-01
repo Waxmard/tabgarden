@@ -14,7 +14,8 @@ AI-groups tabs in the current window and closes the loose tabs after the active 
 ## Layout
 - `src/` — the unpacked extension root (load this directory, not the repo root)
   - `manifest.json` — permissions, commands (keyboard shortcuts), popup wiring
-  - `background.js` — service worker: `clearDown`, `autoGroup`, command + message handlers
+  - `background.js` — service worker: `clearDown`, `smartClear`, `autoGroup`, command + message handlers
+  - `usage.js` — tracks per-host focus seconds into `chrome.storage.local` for Smart clear (`usageSnapshot`)
   - `logic.js` — pure selection/validation helpers; no `chrome.*`, unit-tested in Node
   - `ai.js` — on-device Gemini Nano via Chrome's Prompt API (`proposeGroups`); `background.js` falls back to `groupBySite` when Nano is unavailable or returns nothing
   - `popup.*` — toolbar popup; a click also starts the one-time Nano model download
@@ -28,7 +29,7 @@ AI-groups tabs in the current window and closes the loose tabs after the active 
 ## Conventions
 - Keep `chrome.*` calls out of `logic.js` so it stays testable without a browser.
 - No build step and no dependencies at runtime; biome is the only dev tool.
-- No settings, keys, or network calls: grouping runs on-device (Nano) or by site.
+- No settings, keys, or network calls: grouping runs on-device (Nano) or by site; Smart clear's focus data stays in local storage.
 - Whenever you create or change anything in the extension, create and maintain `CHROMEWEBSTORE.md` (store listing, single purpose, a justification for each manifest permission, privacy notes). Use the `chrome-extensions` skill for its format.
 
 ## Reloading after edits

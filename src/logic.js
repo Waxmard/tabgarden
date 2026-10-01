@@ -113,3 +113,100 @@ export function describeResult(r) {
   const how = r.result.method === 'site' ? ' by site' : '';
   return `Grouped ${count(grouped, 'tab')} into ${count(groups, 'group')}${how}`;
 }
+
+const DAY_MS = 86_400_000;
+const HALF_LIFE_DAYS = 7;
+const PRUNE_DAYS = 60;
+const ACTIVE_DAY_S = 120;
+const LEARN_MIN_S = 3600;
+const RECENT_MS = 30 * 60_000;
+const FLOOR = 0.1;
+const BREAK = 0.6;
+
+export function hostOf(url) {
+  try {
+    const u = new URL(url);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+    return u.hostname.toLowerCase().replace(/^www\./, '');
+  } catch {
+    return null;
+  }
+}
+
+export function dayKey(ms) {
+  const d = new Date(ms);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+const daysBetween = (a, b) =>
+  Math.round((Date.parse(b) - Date.parse(a)) / DAY_MS);
+
+export function addUsage(usage, host, seconds, today) {
+  const u = usage ?? { since: today, sites: {} };
+  u.sites[host] ??= {};
+  u.sites[host][today] = (u.sites[host][today] ?? 0) + seconds;
+  for (const [h, ds] of Object.entries(u.sites)) {
+    for (const day of Object.keys(ds)) {
+      if (daysBetween(day, today) >= PRUNE_DAYS) delete ds[day];
+    }
+    if (!Object.keys(ds).length) delete u.sites[h];
+  }
+  return u;
+}
+
+export function scoreHosts(usage, hosts, today) {
+  const w = (day) => 0.5 ** (daysBetween(day, today) / HALF_LIFE_DAYS);
+  const tracked = Math.min(PRUNE_DAYS, daysBetween(usage.since, today) + 1);
+  let denom = 0;
+  for (let a = 0; a < tracked; a++) denom += 0.5 ** (a / HALF_LIFE_DAYS);
+  const scores = new Map();
+  for (const host of hosts) {
+    let habit = 0;
+    let minutes = 0;
+    for (const [day, secs] of Object.entries(usage.sites[host] ?? {})) {
+      if (secs >= ACTIVE_DAY_S) habit += w(day);
+      minutes += (secs / 60) * w(day);
+    }
+    scores.set(host, (habit / denom) * Math.log1p(minutes));
+  }
+  return scores;
+}
+
+// ponytail: fixed FLOOR/BREAK constants; expose tuning only if real usage shows bad cuts
+export function keepHosts(scores) {
+  const ranked = [...scores]
+    .filter(([, s]) => s > 0)
+    .sort((a, b) => b[1] - a[1]);
+  if (!ranked.length) return new Set();
+  const live = ranked.filter(([, s]) => s >= ranked[0][1] * FLOOR);
+  let cut = live.length;
+  let best = BREAK;
+  for (let i = 0; i < live.length - 1; i++) {
+    const r = live[i + 1][1] / live[i][1];
+    if (r <= best) {
+      best = r;
+      cut = i + 1;
+    }
+  }
+  return new Set(live.slice(0, cut).map(([h]) => h));
+}
+
+export function smartClearIds(tabs, activeTab, usage, now) {
+  const total = Object.values(usage?.sites ?? {})
+    .flatMap(Object.values)
+    .reduce((a, b) => a + b, 0);
+  if (total < LEARN_MIN_S) return null;
+  const candidates = tabs.filter(
+    (t) => t.id !== activeTab.id && !t.pinned && t.groupId === -1
+  );
+  const hosts = new Set(candidates.map((t) => hostOf(t.url)).filter(Boolean));
+  const keep = keepHosts(scoreHosts(usage, hosts, dayKey(now)));
+  return candidates
+    .filter(
+      (t) =>
+        !(t.lastAccessed && now - t.lastAccessed < RECENT_MS) &&
+        !keep.has(hostOf(t.url))
+    )
+    .map((t) => t.id);
+}

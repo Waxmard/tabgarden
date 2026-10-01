@@ -4,13 +4,17 @@ import {
   describeResult,
   groupBySite,
   normalizeGroups,
+  smartClearIds,
   tabsToClear,
 } from './logic.js';
+import { usageSnapshot } from './usage.js';
 
 let groupStatus = { state: 'idle', at: 0 };
 const TABS = { permissions: ['tabs'] };
 const NO_TABS =
-  'Grouping needs access to tab titles and URLs. Click "Group ungrouped" in the toolbar popup to allow it.';
+  'This needs access to tab titles and URLs. Click "Group ungrouped" or "Smart clear" in the toolbar popup to allow it.';
+const LEARNING =
+  'Still learning which sites you use. Try Smart clear again after about an hour of browsing.';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let tabsDenied = false;
 
@@ -75,6 +79,20 @@ async function clearDown() {
   });
   const tabs = await chrome.tabs.query({ currentWindow: true });
   const ids = tabsToClear(tabs, active);
+  if (ids.length) await chrome.tabs.remove(ids);
+  return { closed: ids.length };
+}
+
+async function smartClear() {
+  await ensureTabs(false);
+  const usage = await usageSnapshot();
+  const [active] = await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+  const tabs = await chrome.tabs.query({ currentWindow: true });
+  const ids = smartClearIds(tabs, active, usage, Date.now());
+  if (!ids) throw new Error(LEARNING);
   if (ids.length) await chrome.tabs.remove(ids);
   return { closed: ids.length };
 }
@@ -160,6 +178,7 @@ async function trackedGroup(interactive) {
 
 function run(action, interactive = false) {
   if (action === 'clear-down') return clearDown();
+  if (action === 'smart-clear') return smartClear();
   if (action === 'group-ungrouped') return trackedGroup(interactive);
   if (action === 'ungroup-all') return ungroupAll();
   return Promise.reject(new Error(`Unknown action: ${action}`));

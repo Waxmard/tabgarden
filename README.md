@@ -2,7 +2,7 @@
 
 A Chrome extension that groups the tabs in your window by topic and closes the loose tabs after the one you're on.
 
-Topic grouping runs on-device with Gemini Nano through Chrome's built-in Prompt API. When the model is unavailable, tabgarden groups tabs by site. It makes no network calls and stores nothing.
+Topic grouping runs on-device with Gemini Nano through Chrome's built-in Prompt API. When the model is unavailable, tabgarden groups tabs by site. It makes no network calls. Smart clear stores per-site focus seconds per day (hostname only, up to 60 days) in local extension storage.
 
 ## Features
 
@@ -10,9 +10,10 @@ Topic grouping runs on-device with Gemini Nano through Chrome's built-in Prompt 
 |--------|----------|--------------|
 | **Group ungrouped** | `Alt+Shift+G` | Sorts ungrouped tabs into named, colored groups. Tabs join your existing groups when they fit. A side panel shows progress and the result, then closes itself. |
 | **Clear after** | `Alt+Shift+K` | Closes every loose tab after the active one. Pinned and grouped tabs stay open. |
-| **Ungroup all** | none | Removes every group in the current window. |
+| **Smart clear** | `Alt+Shift+J` | Closes loose tabs in the window except those from sites you use habitually and tabs focused in the last 30 minutes. Learns from your focus time; starts acting after about an hour of browsing. |
+| **Ungroup all** | `Alt+Shift+U` | Removes every group in the current window. |
 
-All three actions are also in the toolbar popup. Change shortcuts at `chrome://extensions/shortcuts`.
+All four actions are also in the toolbar popup. Change shortcuts at `chrome://extensions/shortcuts`.
 
 ## Requirements
 

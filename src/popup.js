@@ -96,6 +96,10 @@ for (const b of document.querySelectorAll('[data-action]')) {
     for (const x of buttons) x.disabled = true;
     status.dataset.tone = 'busy';
     status.textContent = 'Working…';
+    if (b.dataset.action === 'smart-clear' && !hasTabs) {
+      hasTabs = await chrome.permissions.request(TABS).catch(() => false);
+      access.hidden = hasTabs;
+    }
     const reply = chrome.runtime.sendMessage({
       action: b.dataset.action,
       interactive: true,

@@ -10,7 +10,7 @@
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
   },
-  "permissions": ["tabGroups", "sidePanel"],
+  "permissions": ["tabGroups", "sidePanel", "storage", "idle"],
   "optional_permissions": ["tabs"],
   "background": {
     "service_worker": "background.js",
@@ -36,7 +36,16 @@
       },
       "description": "AI-group ungrouped tabs"
     },
+    "smart-clear": {
+      "suggested_key": {
+        "default": "Alt+Shift+J"
+      },
+      "description": "Close loose tabs from sites you rarely use"
+    },
     "ungroup-all": {
+      "suggested_key": {
+        "default": "Alt+Shift+U"
+      },
       "description": "Ungroup every tab in the window"
     }
   }

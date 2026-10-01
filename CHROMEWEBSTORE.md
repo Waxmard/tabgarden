@@ -1,6 +1,6 @@
 # Chrome Web Store Listing — tabgarden
 
-> Last Updated: 2026-09-29
+> Last Updated: 2026-10-01
 
 ## Store Listing
 
@@ -110,7 +110,8 @@ https://github.com/Waxmard/tabgarden
 
 | Version | Date | Changes | Status |
 |---------|------|---------|--------|
-| 0.2.0 | 2026-09-25 | Side panel shows grouping progress and result | Draft |
+| 1.0.0 | 2026-10-01 | Side panel progress, redesigned popup, browsing-history access requested on first use, waits for the on-device model download | Submitted |
+| 0.2.0 | 2026-09-25 | Side panel shows grouping progress and result | Published |
 
 ## Review Notes
 

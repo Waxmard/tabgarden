@@ -13,6 +13,7 @@ jobs:
         id: release
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          target-branch: main
 
       - name: Auto-merge release PR
         run: |

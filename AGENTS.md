@@ -37,6 +37,7 @@ AI-groups tabs in the current window and closes the loose tabs after the active 
 - To ship, open a `dev → main` PR and rebase-merge it. release-please then opens a release PR on `main` that bumps `src/manifest.json` and auto-merges once CI passes; the merge tags the version.
 - After a release, reset `dev` to `main` (`git switch dev && git reset --hard origin/main && git push -f`) so the rebased commits don't reappear in the next promotion.
 - Upload to the Chrome Web Store by hand: `make package` on the tagged `main`, then upload `dist/tabgarden-v<version>.zip`.
+- The `main` ruleset (required `check`, linear history, no force-push) targets `refs/heads/main`, not `~DEFAULT_BRANCH`; otherwise it follows the default to `dev` and blocks the post-release reset.
 - Biome formats JSON with `expand: always` so it matches release-please's rewrite of `src/manifest.json`; don't collapse it.
 
 ## Reloading after edits
